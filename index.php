@@ -29,9 +29,10 @@ if (isset($_GET['err'])) {
   <div class="login-card">
     <div class="login-side">
       <span class="badge-modulo">Módulo 3.1 · Desarrollo de Software</span>
-      <h1><svg class="lucide" data-lucide="graduation-cap"></svg> Portal Web de Consulta de Notas</h1>
+      <h1><svg class="lucide" data-lucide="graduation-cap"></svg> SIGEA | Portal Web de Consulta de Notas</h1>
       <p>Consulta calificaciones, asistencia y avisos de tus hijos de forma rápida y segura, o gestiona la información académica del instituto desde el panel administrativo.</p>
     </div>
+
     <div class="login-form-side">
       <h2>Iniciar sesión</h2>
       <p class="subtitulo">Selecciona tu tipo de usuario para continuar</p>
@@ -42,9 +43,11 @@ if (isset($_GET['err'])) {
 
       <div class="nav-tabs-rol">
         <button type="button" id="tabPadre" class="activo" onclick="mostrarTab('padre')"><svg class="lucide" data-lucide="user"></svg> Padre de Familia</button>
+        <button type="button" id="tabProfesor" onclick="mostrarTab('profesor')"><svg class="lucide" data-lucide="presentation"></svg> Profesor</button>
         <button type="button" id="tabAdmin" onclick="mostrarTab('admin')"><svg class="lucide" data-lucide="shield-check"></svg> Administrador</button>
       </div>
 
+      <!-- ── FORM: Padre ── -->
       <form id="formPadre" method="POST" action="login_procesar.php">
         <input type="hidden" name="rol" value="padre">
         <div class="form-grupo">
@@ -54,7 +57,7 @@ if (isset($_GET['err'])) {
         <div class="form-grupo">
           <label>Contraseña</label>
           <div class="campo-password">
-            <input type="password" name="password" placeholder="••••••••" required>
+            <input type="password" name="password" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;" required>
             <button type="button" class="toggle-password" tabindex="-1" aria-label="Mostrar contraseña"><svg class="lucide" data-lucide="eye"></svg></button>
           </div>
         </div>
@@ -62,7 +65,7 @@ if (isset($_GET['err'])) {
         <button type="submit" class="btn-primario"><svg class="lucide" data-lucide="log-in"></svg> Entrar como Padre</button>
       </form>
 
-      <!-- ── Ayuda para padres (solo visible en tab padre) ── -->
+      <!-- ── Ayuda para padres ── -->
       <div id="ayudaPadre" class="login-ayuda">
         <div class="login-ayuda-links">
           <button type="button" class="link-ayuda" id="btnSolicitarCuenta">
@@ -77,6 +80,25 @@ if (isset($_GET['err'])) {
         </div>
       </div>
 
+      <!-- ── FORM: Profesor ── -->
+      <form id="formProfesor" method="POST" action="login_procesar.php" style="display:none">
+        <input type="hidden" name="rol" value="profesor">
+        <div class="form-grupo">
+          <label>Usuario</label>
+          <input type="text" name="usuario" placeholder="Ingresa tu usuario">
+        </div>
+        <div class="form-grupo">
+          <label>Contraseña</label>
+          <div class="campo-password">
+            <input type="password" name="password" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;">
+            <button type="button" class="toggle-password" tabindex="-1" aria-label="Mostrar contraseña"><svg class="lucide" data-lucide="eye"></svg></button>
+          </div>
+        </div>
+        <label class="recordarme"><input type="checkbox" name="recordarme"> Recordarme en este dispositivo</label>
+        <button type="submit" class="btn-primario"><svg class="lucide" data-lucide="log-in"></svg> Entrar como Profesor</button>
+      </form>
+
+      <!-- ── FORM: Admin ── -->
       <form id="formAdmin" method="POST" action="login_procesar.php" style="display:none">
         <input type="hidden" name="rol" value="admin">
         <div class="form-grupo">
@@ -86,18 +108,18 @@ if (isset($_GET['err'])) {
         <div class="form-grupo">
           <label>Contraseña</label>
           <div class="campo-password">
-            <input type="password" name="password" placeholder="••••••••">
+            <input type="password" name="password" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;">
             <button type="button" class="toggle-password" tabindex="-1" aria-label="Mostrar contraseña"><svg class="lucide" data-lucide="eye"></svg></button>
           </div>
         </div>
         <label class="recordarme"><input type="checkbox" name="recordarme"> Recordarme en este dispositivo</label>
         <button type="submit" class="btn-primario"><svg class="lucide" data-lucide="log-in"></svg> Entrar como Administrador</button>
       </form>
-    </div>
-  </div>
+    </div><!-- /login-form-side -->
+  </div><!-- /login-card -->
 
   <!-- ═══════════════════════════════════════════════
-       PANEL: Solicitar cuenta
+       PANEL: Solicitar cuenta de padre
   ════════════════════════════════════════════════ -->
   <div class="panel-modal-scrim" id="scrimSolicitar"></div>
   <div class="panel-modal" id="panelSolicitar" role="dialog" aria-modal="true" aria-labelledby="tituloSolicitar">
@@ -125,12 +147,12 @@ if (isset($_GET['err'])) {
         <input type="text" id="solTelefono" placeholder="7000-0000" autocomplete="tel">
       </div>
       <div class="form-grupo">
-        <label>Nombre(s) del estudiante vinculado</label>
-        <input type="text" id="solEstudiante" placeholder="Ej. Ana García">
+        <label>Carnet del estudiante</label>
+        <input type="text" id="solCarnet" placeholder="Ej. 2026-001">
       </div>
       <div class="form-grupo">
-        <label>Grado y sección del estudiante</label>
-        <input type="text" id="solGrado" placeholder="Ej. 2do Año Bachillerato — Sección A">
+        <label>Nombre del estudiante</label>
+        <input type="text" id="solEstudiante" placeholder="Ej. Ana García">
       </div>
       <div class="panel-modal-info">
         <svg class="lucide" data-lucide="info"></svg>
@@ -139,11 +161,11 @@ if (isset($_GET['err'])) {
       <button type="button" class="btn-primario" id="btnEnviarSolicitud">
         <svg class="lucide" data-lucide="send"></svg> Enviar solicitud
       </button>
-    </div>
-  </div>
+    </div><!-- /panel-modal-body -->
+  </div><!-- /panelSolicitar -->
 
   <!-- ═══════════════════════════════════════════════
-       PANEL: Olvidé mi contraseña
+       PANEL: Recuperar contraseña
   ════════════════════════════════════════════════ -->
   <div class="panel-modal-scrim" id="scrimPassword"></div>
   <div class="panel-modal" id="panelPassword" role="dialog" aria-modal="true" aria-labelledby="tituloPassword">
@@ -151,7 +173,7 @@ if (isset($_GET['err'])) {
       <div class="panel-modal-icono bg-dorado"><svg class="lucide" data-lucide="key-round"></svg></div>
       <div>
         <h2 id="tituloPassword">Recuperar contraseña</h2>
-        <p>Indica tu usuario o correo y te ayudaremos a recuperar el acceso.</p>
+        <p>Indica tu correo registrado y la secretaría te ayudará.</p>
       </div>
       <button type="button" class="panel-modal-cerrar" id="cerrarPassword" aria-label="Cerrar">
         <svg class="lucide" data-lucide="x"></svg>
@@ -159,41 +181,82 @@ if (isset($_GET['err'])) {
     </div>
     <div class="panel-modal-body">
       <div class="form-grupo">
-        <label>Usuario o correo registrado</label>
-        <input type="text" id="recUsuario" placeholder="Ej. mgarcia  ó  correo@ejemplo.com" autocomplete="username">
+        <label>Eres:</label>
+        <select id="recTipo" style="width:100%;padding:11px 14px;border:1.5px solid var(--borde);border-radius:10px;background:var(--tarjeta-solida);color:var(--texto);">
+          <option value="padre">Padre de familia</option>
+          <option value="admin">Profesor / Administrador</option>
+        </select>
+      </div>
+      <div class="form-grupo">
+        <label>Correo electrónico registrado</label>
+        <input type="email" id="recCorreo" placeholder="correo@ejemplo.com" autocomplete="email">
       </div>
       <div class="panel-modal-info">
         <svg class="lucide" data-lucide="info"></svg>
-        El administrador verificará tu identidad y te enviará una contraseña temporal al correo vinculado a tu cuenta.
-      </div>
-      <div class="panel-modal-pasos">
-        <div class="paso">
-          <div class="paso-num">1</div>
-          <span>Envía tu solicitud con el formulario de arriba</span>
-        </div>
-        <div class="paso">
-          <div class="paso-num">2</div>
-          <span>La secretaría valida tu identidad (1–2 días hábiles)</span>
-        </div>
-        <div class="paso">
-          <div class="paso-num">3</div>
-          <span>Recibes una contraseña temporal en tu correo</span>
-        </div>
+        La secretaría verificará tu identidad y restablecerá tu contraseña. Recibirás un correo con los pasos a seguir.
       </div>
       <button type="button" class="btn-primario" id="btnEnviarRecuperacion">
         <svg class="lucide" data-lucide="send"></svg> Solicitar recuperación
       </button>
-    </div>
-  </div>
+    </div><!-- /panel-modal-body -->
+  </div><!-- /panelPassword -->
+</div><!-- /login-wrap -->
 
-  </div>
+<script>
+  lucide.createIcons();
 
+  // ── Cambio de pestaña de rol ──
+  function mostrarTab(rol) {
+    const tabs = { padre: 'formPadre', profesor: 'formProfesor', admin: 'formAdmin' };
+    const botones = { padre: 'tabPadre', profesor: 'tabProfesor', admin: 'tabAdmin' };
+
+    Object.keys(tabs).forEach(key => {
+      document.getElementById(tabs[key]).style.display = (key === rol) ? '' : 'none';
+      document.getElementById(botones[key]).classList.toggle('activo', key === rol);
+    });
+
+    // La ayuda para "Solicitar cuenta / Olvidé contraseña" solo aplica a Padres
+    document.getElementById('ayudaPadre').style.display = (rol === 'padre') ? '' : 'none';
+  }
+
+  // ── Mostrar / ocultar contraseña ──
+  document.querySelectorAll('.toggle-password').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const input = btn.previousElementSibling;
+      const esPassword = input.type === 'password';
+      input.type = esPassword ? 'text' : 'password';
+      btn.innerHTML = `<svg class="lucide" data-lucide="${esPassword ? 'eye-off' : 'eye'}"></svg>`;
+      lucide.createIcons();
+    });
+  });
+
+  // ── Apertura / cierre de paneles modales ──
+  function abrirPanel(idPanel, idScrim) {
+    document.getElementById(idPanel).classList.add('visible');
+    document.getElementById(idScrim).classList.add('visible');
+  }
+  function cerrarPanel(idPanel, idScrim) {
+    document.getElementById(idPanel).classList.remove('visible');
+    document.getElementById(idScrim).classList.remove('visible');
+  }
+
+  document.getElementById('btnSolicitarCuenta').addEventListener('click', () => abrirPanel('panelSolicitar', 'scrimSolicitar'));
+  document.getElementById('btnOlvidePassword').addEventListener('click', () => abrirPanel('panelPassword', 'scrimPassword'));
+  document.getElementById('cerrarSolicitar').addEventListener('click', () => cerrarPanel('panelSolicitar', 'scrimSolicitar'));
+  document.getElementById('cerrarPassword').addEventListener('click', () => cerrarPanel('panelPassword', 'scrimPassword'));
+  document.getElementById('scrimSolicitar').addEventListener('click', () => cerrarPanel('panelSolicitar', 'scrimSolicitar'));
+  document.getElementById('scrimPassword').addEventListener('click', () => cerrarPanel('panelPassword', 'scrimPassword'));
+</script>
+</body>
+</html>
 
 <script>
 function mostrarTab(rol) {
   document.getElementById('tabPadre').classList.toggle('activo', rol === 'padre');
+  document.getElementById('tabProfesor').classList.toggle('activo', rol === 'profesor');
   document.getElementById('tabAdmin').classList.toggle('activo', rol === 'admin');
   document.getElementById('formPadre').style.display = rol === 'padre' ? 'block' : 'none';
+  document.getElementById('formProfesor').style.display = rol === 'profesor' ? 'block' : 'none';
   document.getElementById('formAdmin').style.display = rol === 'admin' ? 'block' : 'none';
   var ayuda = document.getElementById('ayudaPadre');
   if (ayuda) ayuda.style.display = rol === 'padre' ? 'flex' : 'none';
@@ -206,16 +269,6 @@ function abrirPanel(panelId, scrimId) {
   if (!panel || !scrim) return;
   scrim.classList.add('visible');
   panel.classList.add('visible');
-  document.body.style.overflow = 'hidden';
-}
-
-function cerrarPanel(panelId, scrimId) {
-  var panel = document.getElementById(panelId);
-  var scrim = document.getElementById(scrimId);
-  if (!panel || !scrim) return;
-  scrim.classList.remove('visible');
-  panel.classList.remove('visible');
-  document.body.style.overflow = '';
 }
 
 function mostrarExito(btn, msg) {

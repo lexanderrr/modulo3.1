@@ -11,8 +11,8 @@ if ($usuario === '' || $password === '') {
     exit;
 }
 
-if ($rol === 'admin') {
-    $stmt = $pdo->prepare('SELECT id, nombre, password FROM administradores WHERE usuario = ?');
+if ($rol === 'admin' || $rol === 'profesor') {
+    $stmt = $pdo->prepare('SELECT id, nombre, password, rol FROM administradores WHERE usuario = ?');
     $stmt->execute([$usuario]);
     $fila = $stmt->fetch();
 
@@ -20,7 +20,13 @@ if ($rol === 'admin') {
         session_regenerate_id(true);
         $_SESSION['admin_id']     = $fila['id'];
         $_SESSION['admin_nombre'] = $fila['nombre'];
-        header('Location: admin/dashboard.php');
+        $_SESSION['admin_rol']    = $fila['rol'];
+        
+        if ($fila['rol'] === 'profesor') {
+            header('Location: profesor/dashboard.php');
+        } else {
+            header('Location: admin/dashboard.php');
+        }
         exit;
     }
 } elseif ($rol === 'padre') {
