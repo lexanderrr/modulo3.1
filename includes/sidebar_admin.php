@@ -21,6 +21,9 @@
     <a href="padres.php" class="<?= $pagina === 'padres.php' ? 'activo' : '' ?>">
       <svg class="lucide" data-lucide="users"></svg><span class="etiqueta">Padres de Familia</span>
     </a>
+    <a href="profesores.php" class="<?= $pagina === 'profesores.php' ? 'activo' : '' ?>">
+      <svg class="lucide" data-lucide="briefcase"></svg><span class="etiqueta">Profesores</span>
+    </a>
 
     <div class="grupo-titulo">Académico</div>
     <a href="materias.php" class="<?= $pagina === 'materias.php' ? 'activo' : '' ?>">

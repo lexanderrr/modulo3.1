@@ -19,6 +19,14 @@ function exigirPadre(): void {
     }
 }
 
+/** Exige sesión de profesor; si no existe, redirige al login. */
+function exigirProfesor(): void {
+    if (empty($_SESSION['profesor_id'])) {
+        header('Location: /index.php?err=sesion');
+        exit;
+    }
+}
+
 /** Escapa texto para salida segura en HTML. */
 function h($texto): string {
     return htmlspecialchars($texto ?? '', ENT_QUOTES, 'UTF-8');

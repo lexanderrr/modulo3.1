@@ -2,8 +2,9 @@
 require_once __DIR__ . '/includes/sesion.php';
 
 // Si ya hay sesión activa, redirigir directo
-if (!empty($_SESSION['admin_id'])) { header('Location: admin/dashboard.php'); exit; }
-if (!empty($_SESSION['padre_id'])) { header('Location: padres/dashboard.php'); exit; }
+if (!empty($_SESSION['admin_id']))    { header('Location: admin/dashboard.php'); exit; }
+if (!empty($_SESSION['padre_id']))    { header('Location: padres/dashboard.php'); exit; }
+if (!empty($_SESSION['profesor_id'])) { header('Location: profesor/dashboard.php'); exit; }
 
 $error = '';
 if (isset($_GET['err'])) {
@@ -205,7 +206,6 @@ if (isset($_GET['err'])) {
 <script>
   lucide.createIcons();
 
-  // ── Cambio de pestaña de rol ──
   function mostrarTab(rol) {
     const tabs = { padre: 'formPadre', profesor: 'formProfesor', admin: 'formAdmin' };
     const botones = { padre: 'tabPadre', profesor: 'tabProfesor', admin: 'tabAdmin' };
@@ -215,11 +215,9 @@ if (isset($_GET['err'])) {
       document.getElementById(botones[key]).classList.toggle('activo', key === rol);
     });
 
-    // La ayuda para "Solicitar cuenta / Olvidé contraseña" solo aplica a Padres
     document.getElementById('ayudaPadre').style.display = (rol === 'padre') ? '' : 'none';
   }
 
-  // ── Mostrar / ocultar contraseña ──
   document.querySelectorAll('.toggle-password').forEach(btn => {
     btn.addEventListener('click', () => {
       const input = btn.previousElementSibling;
@@ -230,7 +228,6 @@ if (isset($_GET['err'])) {
     });
   });
 
-  // ── Apertura / cierre de paneles modales ──
   function abrirPanel(idPanel, idScrim) {
     document.getElementById(idPanel).classList.add('visible');
     document.getElementById(idScrim).classList.add('visible');
@@ -240,80 +237,46 @@ if (isset($_GET['err'])) {
     document.getElementById(idScrim).classList.remove('visible');
   }
 
-  document.getElementById('btnSolicitarCuenta').addEventListener('click', () => abrirPanel('panelSolicitar', 'scrimSolicitar'));
-  document.getElementById('btnOlvidePassword').addEventListener('click', () => abrirPanel('panelPassword', 'scrimPassword'));
-  document.getElementById('cerrarSolicitar').addEventListener('click', () => cerrarPanel('panelSolicitar', 'scrimSolicitar'));
-  document.getElementById('cerrarPassword').addEventListener('click', () => cerrarPanel('panelPassword', 'scrimPassword'));
-  document.getElementById('scrimSolicitar').addEventListener('click', () => cerrarPanel('panelSolicitar', 'scrimSolicitar'));
-  document.getElementById('scrimPassword').addEventListener('click', () => cerrarPanel('panelPassword', 'scrimPassword'));
-</script>
-</body>
-</html>
-
-<script>
-function mostrarTab(rol) {
-  document.getElementById('tabPadre').classList.toggle('activo', rol === 'padre');
-  document.getElementById('tabProfesor').classList.toggle('activo', rol === 'profesor');
-  document.getElementById('tabAdmin').classList.toggle('activo', rol === 'admin');
-  document.getElementById('formPadre').style.display = rol === 'padre' ? 'block' : 'none';
-  document.getElementById('formProfesor').style.display = rol === 'profesor' ? 'block' : 'none';
-  document.getElementById('formAdmin').style.display = rol === 'admin' ? 'block' : 'none';
-  var ayuda = document.getElementById('ayudaPadre');
-  if (ayuda) ayuda.style.display = rol === 'padre' ? 'flex' : 'none';
-}
-
-/* ── Paneles modales ── */
-function abrirPanel(panelId, scrimId) {
-  var panel = document.getElementById(panelId);
-  var scrim = document.getElementById(scrimId);
-  if (!panel || !scrim) return;
-  scrim.classList.add('visible');
-  panel.classList.add('visible');
-}
-
-function mostrarExito(btn, msg) {
-  var original = btn.innerHTML;
-  btn.innerHTML = '<svg class="lucide" data-lucide="check-circle"></svg> ' + msg;
-  btn.style.background = 'var(--verde)';
-  btn.disabled = true;
-  if (window.lucide) window.lucide.createIcons();
-  setTimeout(function () {
-    btn.innerHTML = original;
-    btn.style.background = '';
-    btn.disabled = false;
+  function mostrarExito(btn, msg) {
+    var original = btn.innerHTML;
+    btn.innerHTML = '<svg class="lucide" data-lucide="check-circle"></svg> ' + msg;
+    btn.style.background = 'var(--verde)';
+    btn.disabled = true;
     if (window.lucide) window.lucide.createIcons();
-  }, 3000);
-}
+    setTimeout(function () {
+      btn.innerHTML = original;
+      btn.style.background = '';
+      btn.disabled = false;
+      if (window.lucide) window.lucide.createIcons();
+    }, 3000);
+  }
 
-document.addEventListener('DOMContentLoaded', function () {
-  /* Solicitar cuenta */
-  var btnSol = document.getElementById('btnSolicitarCuenta');
-  if (btnSol) btnSol.addEventListener('click', function () { abrirPanel('panelSolicitar', 'scrimSolicitar'); });
-  document.getElementById('cerrarSolicitar').addEventListener('click', function () { cerrarPanel('panelSolicitar', 'scrimSolicitar'); });
-  document.getElementById('scrimSolicitar').addEventListener('click', function () { cerrarPanel('panelSolicitar', 'scrimSolicitar'); });
-  document.getElementById('btnEnviarSolicitud').addEventListener('click', function () {
-    mostrarExito(this, '¡Solicitud enviada!');
-    setTimeout(function () { cerrarPanel('panelSolicitar', 'scrimSolicitar'); }, 1200);
-  });
+  document.addEventListener('DOMContentLoaded', function () {
+    var btnSol = document.getElementById('btnSolicitarCuenta');
+    if (btnSol) btnSol.addEventListener('click', function () { abrirPanel('panelSolicitar', 'scrimSolicitar'); });
+    document.getElementById('cerrarSolicitar').addEventListener('click', function () { cerrarPanel('panelSolicitar', 'scrimSolicitar'); });
+    document.getElementById('scrimSolicitar').addEventListener('click', function () { cerrarPanel('panelSolicitar', 'scrimSolicitar'); });
+    document.getElementById('btnEnviarSolicitud').addEventListener('click', function () {
+      mostrarExito(this, '¡Solicitud enviada!');
+      setTimeout(function () { cerrarPanel('panelSolicitar', 'scrimSolicitar'); }, 1200);
+    });
 
-  /* Olvidé contraseña */
-  var btnPass = document.getElementById('btnOlvidePassword');
-  if (btnPass) btnPass.addEventListener('click', function () { abrirPanel('panelPassword', 'scrimPassword'); });
-  document.getElementById('cerrarPassword').addEventListener('click', function () { cerrarPanel('panelPassword', 'scrimPassword'); });
-  document.getElementById('scrimPassword').addEventListener('click', function () { cerrarPanel('panelPassword', 'scrimPassword'); });
-  document.getElementById('btnEnviarRecuperacion').addEventListener('click', function () {
-    mostrarExito(this, '¡Solicitud enviada!');
-    setTimeout(function () { cerrarPanel('panelPassword', 'scrimPassword'); }, 1200);
-  });
+    var btnPass = document.getElementById('btnOlvidePassword');
+    if (btnPass) btnPass.addEventListener('click', function () { abrirPanel('panelPassword', 'scrimPassword'); });
+    document.getElementById('cerrarPassword').addEventListener('click', function () { cerrarPanel('panelPassword', 'scrimPassword'); });
+    document.getElementById('scrimPassword').addEventListener('click', function () { cerrarPanel('panelPassword', 'scrimPassword'); });
+    document.getElementById('btnEnviarRecuperacion').addEventListener('click', function () {
+      mostrarExito(this, '¡Solicitud enviada!');
+      setTimeout(function () { cerrarPanel('panelPassword', 'scrimPassword'); }, 1200);
+    });
 
-  /* Escape cierra ambos paneles */
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') {
-      cerrarPanel('panelSolicitar', 'scrimSolicitar');
-      cerrarPanel('panelPassword', 'scrimPassword');
-    }
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        cerrarPanel('panelSolicitar', 'scrimSolicitar');
+        cerrarPanel('panelPassword', 'scrimPassword');
+      }
+    });
   });
-});
 </script>
 <script src="assets/js/app.js"></script>
 </body>
