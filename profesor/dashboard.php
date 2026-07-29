@@ -3,8 +3,8 @@ require_once __DIR__ . '/../includes/sesion.php';
 require_once __DIR__ . '/../config/conexion.php';
 exigirProfesor();
 
-$stmt = $pdo->prepare('SELECT nombre, apellido, email, especialidad FROM profesores WHERE id = ?');
-$stmt->execute([$_SESSION['profesor_id']]);
+$stmt = $pdo->prepare('SELECT nombre, correo, especialidad FROM administradores WHERE id = ?');
+$stmt->execute([$_SESSION['admin_id']]);
 $profesor = $stmt->fetch();
 ?>
 <!DOCTYPE html>
@@ -24,10 +24,11 @@ $profesor = $stmt->fetch();
 <div class="app-shell">
   <?php include __DIR__ . '/../includes/sidebar_profesor.php'; ?>
   <main class="contenido">
+    <?php $tituloPagina = 'Panel de Profesor'; include __DIR__ . '/../includes/topbar.php'; ?>
     <div class="panel">
       <h2>
         <svg class="lucide" data-lucide="presentation"></svg>
-        Bienvenido, <?= h(($profesor['nombre'] ?? '') . ' ' . ($profesor['apellido'] ?? '')) ?>
+        Bienvenido, <?= h($profesor['nombre'] ?? $_SESSION['admin_nombre'] ?? '') ?>
       </h2>
       <p>Has iniciado sesión correctamente como profesor.</p>
       <?php if (!empty($profesor['especialidad'])): ?>

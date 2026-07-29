@@ -74,7 +74,7 @@ if ($filtroGrado !== '') {
       </div>
 
       <?php if (!$misMaterias): ?>
-        <div class="alerta alerta-error"><svg class="lucide" data-lucide="alert-circle"></svg> No tienes materias asignadas. Contacta a la secretaría para que te asigne materias.</div>
+        <div class="alerta alerta-error"><svg class="lucide" data-lucide="alert-circle"></svg> No hay ningun estudiante registrado. Contacta a la secretaría para asignarlos.</div>
       <?php endif; ?>
 
       <div class="tabla-wrap">
