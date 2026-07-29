@@ -1,12 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/sesion.php';
 require_once __DIR__ . '/../config/conexion.php';
-exigirAdmin();
-
-if ($_SESSION['admin_rol'] !== 'profesor') {
-    header('Location: ../admin/dashboard.php');
-    exit;
-}
+exigirProfesor();
 
 // Obtener las materias del profesor
 $stmt = $pdo->prepare('SELECT * FROM materias WHERE docente LIKE ? ORDER BY nombre');
@@ -37,15 +32,16 @@ if (!$estudiantes && $misMaterias) {
     $estudiantes = $stmt->fetchAll();
 }
 
+// Filtro por año (botones)
+$aniosDisponibles = ['1er Año Bachillerato', '2do Año Bachillerato', '3er Año Bachillerato'];
 $filtroGrado = $_GET['grado'] ?? '';
-if ($filtroGrado && $estudiantes) {
-    $estudiantes = array_filter($estudiantes, function($e) use ($filtroGrado) {
+
+$estudiantesFiltrados = $estudiantes;
+if ($filtroGrado !== '') {
+    $estudiantesFiltrados = array_filter($estudiantes, function($e) use ($filtroGrado) {
         return $e['grado'] === $filtroGrado;
     });
 }
-
-$grados = array_unique(array_column($estudiantes, 'grado'));
-sort($grados);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -69,14 +65,12 @@ sort($grados);
     <div class="panel">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:18px;">
         <h2 style="margin:0;"><svg class="lucide" data-lucide="graduation-cap"></svg> Mis alumnos</h2>
-        <form method="GET" style="display:flex;gap:8px;align-items:center;">
-          <select name="grado" onchange="this.form.submit()" style="padding:9px 12px;border:1.5px solid var(--borde);border-radius:10px;background:var(--tarjeta-solida);color:var(--texto);">
-            <option value="">Todos los grados</option>
-            <?php foreach ($grados as $g): ?>
-              <option value="<?= h($g) ?>" <?= $filtroGrado === $g ? 'selected' : '' ?>><?= h($g) ?></option>
-            <?php endforeach; ?>
-          </select>
-        </form>
+        <div class="filtro-anios">
+          <a href="estudiantes.php" class="btn-filtro <?= $filtroGrado === '' ? 'activo' : '' ?>">Todos</a>
+          <?php foreach ($aniosDisponibles as $anio): ?>
+            <a href="estudiantes.php?grado=<?= urlencode($anio) ?>" class="btn-filtro <?= $filtroGrado === $anio ? 'activo' : '' ?>"><?= h($anio) ?></a>
+          <?php endforeach; ?>
+        </div>
       </div>
 
       <?php if (!$misMaterias): ?>
@@ -87,7 +81,7 @@ sort($grados);
         <table class="tabla-datos">
           <thead><tr><th>Carnet</th><th>Nombre completo</th><th>Grado</th><th>Sección</th></tr></thead>
           <tbody>
-          <?php foreach ($estudiantes as $e): ?>
+          <?php foreach ($estudiantesFiltrados as $e): ?>
             <tr>
               <td><?= h($e['carnet']) ?></td>
               <td><?= h($e['nombre'] . ' ' . $e['apellido']) ?></td>
@@ -95,16 +89,28 @@ sort($grados);
               <td><?= h($e['seccion']) ?></td>
             </tr>
           <?php endforeach; ?>
-          <?php if (!$estudiantes): ?>
-            <tr><td colspan="4">No hay estudiantes vinculados a tus materias.</td></tr>
+          <?php if (!$estudiantesFiltrados): ?>
+            <tr><td colspan="4">No hay estudiantes vinculados a tus materias<?= $filtroGrado ? ' en ' . h($filtroGrado) : '' ?>.</td></tr>
           <?php endif; ?>
           </tbody>
         </table>
       </div>
-      <p style="color:var(--gris-texto);font-size:13px;margin-top:12px;">Total: <?= count($estudiantes) ?> alumno(s)</p>
+      <p style="color:var(--gris-texto);font-size:13px;margin-top:12px;">Total: <?= count($estudiantesFiltrados) ?> alumno(s)</p>
     </div>
   </main>
 </div>
+
+<style>
+.filtro-anios { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn-filtro {
+  padding: 8px 14px; border-radius: 20px; font-size: 13px; font-weight: 600;
+  border: 1.5px solid rgba(255,255,255,0.12); color: inherit; opacity: 0.8;
+  text-decoration: none; transition: all .15s;
+}
+.btn-filtro:hover { opacity: 1; border-color: #3b82f6; }
+.btn-filtro.activo { background: #3b82f6; border-color: #3b82f6; color: #fff; opacity: 1; }
+</style>
+
 <script src="../assets/js/app.js"></script>
 </body>
 </html>

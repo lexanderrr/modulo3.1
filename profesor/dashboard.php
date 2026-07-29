@@ -22,21 +22,7 @@ $profesor = $stmt->fetch();
 <body>
 <div class="fondo-ambiental"></div>
 <div class="app-shell">
-  <aside class="sidebar">
-    <div class="marca">
-      <div class="icono">PN</div>
-      <div class="texto">Portal de Notas<span>Panel Profesor</span></div>
-    </div>
-    <nav>
-      <div class="grupo-titulo">General</div>
-      <a href="dashboard.php" class="activo">
-        <svg class="lucide" data-lucide="layout-grid"></svg><span class="etiqueta">Inicio</span>
-      </a>
-      <div class="cerrar-sesion">
-        <a href="../logout.php"><svg class="lucide" data-lucide="log-out"></svg><span class="etiqueta">Cerrar sesión</span></a>
-      </div>
-    </nav>
-  </aside>
+  <?php include __DIR__ . '/../includes/sidebar_profesor.php'; ?>
   <main class="contenido">
     <div class="panel">
       <h2>
@@ -47,10 +33,6 @@ $profesor = $stmt->fetch();
       <?php if (!empty($profesor['especialidad'])): ?>
         <p>Especialidad: <?= h($profesor['especialidad']) ?></p>
       <?php endif; ?>
-      <p style="opacity:.7;font-size:14px;margin-top:16px;">
-        Este panel es un punto de partida. Cuéntame qué necesita ver o hacer aquí un profesor
-        (registrar notas, ver sus materias asignadas, tomar asistencia, etc.) y lo construimos.
-      </p>
     </div>
   </main>
 </div>

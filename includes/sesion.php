@@ -3,7 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-/** Exige sesión de administrador; si no existe, redirige al login. */
+/** Exige sesión de administrador (rol='admin'); si no, redirige al login. */
 function exigirAdmin(): void {
     if (empty($_SESSION['admin_id'])) {
         header('Location: /index.php?err=sesion');
@@ -19,9 +19,9 @@ function exigirPadre(): void {
     }
 }
 
-/** Exige sesión de profesor; si no existe, redirige al login. */
+/** Exige sesión de profesor (fila de administradores con rol='profesor'). */
 function exigirProfesor(): void {
-    if (empty($_SESSION['profesor_id'])) {
+    if (empty($_SESSION['admin_id']) || ($_SESSION['admin_rol'] ?? '') !== 'profesor') {
         header('Location: /index.php?err=sesion');
         exit;
     }
