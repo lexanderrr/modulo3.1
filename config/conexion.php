@@ -1,17 +1,16 @@
 <?php
-/**
- * Conexión a la base de datos MySQL (XAMPP) usando PDO.
- * Ajusta estos valores según tu instalación de XAMPP.
- */
 
-$DB_HOST = 'localhost';
-$DB_NAME = 'portal_notas';
-$DB_USER = 'root';   // usuario por defecto de XAMPP
-$DB_PASS = '';        // contraseña por defecto de XAMPP (vacía)
+// Reemplaza estos datos con los que te da Neon Console (pestaña Connection Details)
+$DB_HOST = 'ep-summer-queen-ayv1o5f6-pooler.c-5.us-east-2.aws.neon.tech'; 
+$DB_NAME = 'neondb'; 
+$DB_USER = 'neondb_owner';   
+$DB_PASS = 'npg_5OSsYXBn2zjV';        
+$DB_PORT = '5432'; // Puerto estándar de PostgreSQL
 
 try {
+    // Cambiamos "mysql:" por "pgsql:" y añadimos el puerto y el sslmode obligatorio de Neon
     $pdo = new PDO(
-        "mysql:host={$DB_HOST};dbname={$DB_NAME};charset=utf8mb4",
+        "pgsql:host={$DB_HOST};port={$DB_PORT};dbname={$DB_NAME};sslmode=require",
         $DB_USER,
         $DB_PASS,
         [
@@ -21,5 +20,5 @@ try {
         ]
     );
 } catch (PDOException $e) {
-    die('Error de conexión a la base de datos: ' . $e->getMessage());
+    die('Error de conexión a la base de datos de Neon: ' . $e->getMessage());
 }

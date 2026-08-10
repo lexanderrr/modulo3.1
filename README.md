@@ -14,6 +14,10 @@ el Módulo 3.1 (Desarrollo de aplicaciones de software).
    (configuración estándar de XAMPP). Si tu MySQL tiene otra contraseña, cámbiala ahí.
 5. Abre `http://localhost/portal-notas/index.php` en el navegador.
 
+agregar notificacion de mensualidad y costo a cada padre, que fecha le toca pagar, si ya pagó la mensualidad o si aun no la paga, fecha limite para pagarla
+
+Notificacion para saber si el estudiante llego a clases 
+
 ## 2. Credenciales de acceso (datos de prueba)
 
 | Rol            | Usuario  | Contraseña  |
