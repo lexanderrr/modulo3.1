@@ -11,7 +11,7 @@ if ($usuario === '' || $password === '') {
     exit;
 }
 
-if ($rol === 'admin' || $rol === 'profesor') {
+if ($rol === 'admin' || $rol === 'profesor' || $rol === 'cajero') {
     $stmt = $pdo->prepare('SELECT id, nombre, password, rol FROM administradores WHERE usuario = ?');
     $stmt->execute([$usuario]);
     $fila = $stmt->fetch();

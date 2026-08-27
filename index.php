@@ -17,7 +17,7 @@ if (isset($_GET['err'])) {
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Portal de Notas | Instituto Nacional</title>
+<title>Portal de Notas </title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -66,20 +66,14 @@ if (isset($_GET['err'])) {
         <button type="submit" class="btn-primario"><svg class="lucide" data-lucide="log-in"></svg> Entrar como Padre</button>
       </form>
 
-      <!-- ── Ayuda para padres ── -->
-      <div id="ayudaPadre" class="login-ayuda">
-        <div class="login-ayuda-links">
-          <button type="button" class="link-ayuda" id="btnSolicitarCuenta">
-            <svg class="lucide" data-lucide="user-plus"></svg>
-            ¿No tienes cuenta? <strong>Solicitarla aquí</strong>
-          </button>
-          <span class="separador-ayuda">·</span>
-          <button type="button" class="link-ayuda" id="btnOlvidePassword">
+     <div class="login-ayuda" id="ayudaPadre">
+    <div class="login-ayuda-links">
+        <button type="button" class="link-ayuda" id="btnOlvidePassword">
             <svg class="lucide" data-lucide="key-round"></svg>
             ¿Olvidaste tu contraseña?
-          </button>
-        </div>
-      </div>
+        </button>
+    </div>
+</div>
 
       <!-- ── FORM: Profesor ── -->
       <form id="formProfesor" method="POST" action="login_procesar.php" style="display:none">

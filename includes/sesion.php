@@ -27,6 +27,15 @@ function exigirProfesor(): void {
     }
 }
 
+/** Exige sesión de administrador o cajero (los únicos roles autorizados para el módulo de pagos). */
+function exigirCajero(): void {
+    $rolesPermitidos = ['admin', 'cajero'];
+    if (empty($_SESSION['admin_id']) || !in_array($_SESSION['admin_rol'] ?? 'admin', $rolesPermitidos, true)) {
+        header('Location: /index.php?err=sesion');
+        exit;
+    }
+}
+
 /** Escapa texto para salida segura en HTML. */
 function h($texto): string {
     return htmlspecialchars($texto ?? '', ENT_QUOTES, 'UTF-8');

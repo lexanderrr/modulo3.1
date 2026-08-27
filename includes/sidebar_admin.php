@@ -36,6 +36,11 @@
       <svg class="lucide" data-lucide="calendar-check"></svg><span class="etiqueta">Asistencia</span>
     </a>
 
+    <div class="grupo-titulo">Finanzas</div>
+    <a href="pagos.php" class="<?= $pagina === 'pagos.php' || $pagina === 'recibo_pago.php' ? 'activo' : '' ?>">
+      <svg class="lucide" data-lucide="credit-card"></svg><span class="etiqueta">Pagos</span>
+    </a>
+
     <div class="grupo-titulo">Comunicación</div>
     <a href="avisos.php" class="<?= $pagina === 'avisos.php' ? 'activo' : '' ?>">
       <svg class="lucide" data-lucide="megaphone"></svg><span class="etiqueta">Avisos</span>

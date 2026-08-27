@@ -56,10 +56,14 @@ $ultimasNotas = $pdo->query('
         <div class="num"><?= $promedioGeneral !== null ? h($promedioGeneral) : '—' ?></div>
         <div class="label">Promedio general</div>
       </div>
-    </div>
+        </div>
 
+   
     <div class="panel">
-      <h2><svg class="lucide" data-lucide="star"></svg> Últimas notas registradas</h2>
+      <h2>
+        <svg class="lucide" data-lucide="star"></svg>
+        Últimas notas registradas
+      </h2>
       <table class="tabla-datos">
         <thead><tr><th>Estudiante</th><th>Materia</th><th>Nota</th><th>Fecha</th></tr></thead>
         <tbody>

@@ -1,16 +1,17 @@
 <?php
+// =========================================================
+// Conexión a la base de datos: portal_notas
+// Motor: MySQL / MariaDB (XAMPP)
+// =========================================================
 
-// Reemplaza estos datos con los que te da Neon Console (pestaña Connection Details)
-$DB_HOST = 'ep-summer-queen-ayv1o5f6-pooler.c-5.us-east-2.aws.neon.tech'; 
-$DB_NAME = 'neondb'; 
-$DB_USER = 'neondb_owner';   
-$DB_PASS = 'npg_5OSsYXBn2zjV';        
-$DB_PORT = '5432'; // Puerto estándar de PostgreSQL
+$DB_HOST = 'localhost';
+$DB_NAME = 'portal_notas';
+$DB_USER = 'root';
+$DB_PASS = '';
 
 try {
-    // Cambiamos "mysql:" por "pgsql:" y añadimos el puerto y el sslmode obligatorio de Neon
     $pdo = new PDO(
-        "pgsql:host={$DB_HOST};port={$DB_PORT};dbname={$DB_NAME};sslmode=require",
+        "mysql:host={$DB_HOST};dbname={$DB_NAME};charset=utf8mb4",
         $DB_USER,
         $DB_PASS,
         [
@@ -20,5 +21,5 @@ try {
         ]
     );
 } catch (PDOException $e) {
-    die('Error de conexión a la base de datos de Neon: ' . $e->getMessage());
+    die('Error de conexión a la base de datos. Verifica que el servidor MySQL esté activo y que los datos de conexión sean correctos.');
 }

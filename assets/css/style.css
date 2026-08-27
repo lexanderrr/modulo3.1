@@ -950,3 +950,239 @@ input:focus, select:focus, textarea:focus { border-color: var(--azul); box-shado
   .panel-modal-body  { padding: 20px 20px 28px; }
 }
 
+/* =========================================================
+   CENTRADO COMPLETO DEL LOGIN
+   ========================================================= */
+
+.login-wrap {
+    min-height: 100vh;
+    width: 100%;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    padding: 24px;
+    margin: 0;
+    
+    position: relative;
+    overflow: hidden;
+}
+
+.login-card {
+    position: relative;
+    z-index: 1;
+
+    width: min(940px, 100%);
+    max-width: 940px;
+
+    margin: 0 auto;
+
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+}
+
+/* Evita que elementos del formulario se salgan */
+.login-form-side {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+/* Parte izquierda */
+.login-side {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 980px) {
+    .login-wrap {
+        padding: 20px;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 600px;
+    }
+
+    .login-side {
+        display: none;
+    }
+
+    .login-form-side {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 640px) {
+    .login-wrap {
+        padding: 15px;
+    }
+
+    .login-card {
+        width: 100%;
+    }
+
+    .login-form-side {
+        padding: 35px 22px;
+    }
+}
+
+/* ==========================================================
+   CORRECCIÓN DEFINITIVA DEL LOGIN
+   Centrado y ajuste de los campos del formulario
+   ========================================================== */
+
+.login-wrap {
+    width: 100%;
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 24px;
+    margin: 0;
+
+    position: relative;
+    overflow: hidden;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 940px;
+
+    margin: 0 auto;
+
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+
+    position: relative;
+    z-index: 1;
+}
+
+/* PANEL DERECHO */
+.login-form-side {
+    flex: 1 1 50%;
+    width: 50%;
+    min-width: 0;
+
+    padding: 52px 48px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+
+    box-sizing: border-box;
+}
+
+/* Todos los elementos internos ocupan solamente
+   el ancho del panel derecho */
+.login-form-side > * {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Contenedor de cada campo */
+.login-form-side .form-grupo {
+    width: 100%;
+    margin-bottom: 16px;
+    box-sizing: border-box;
+}
+
+/* Etiquetas */
+.login-form-side .form-grupo label {
+    display: block;
+    width: 100%;
+}
+
+/* Campos */
+.login-form-side input[type="text"],
+.login-form-side input[type="password"],
+.login-form-side input[type="email"] {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Campo de contraseña */
+.login-form-side .campo-password {
+    position: relative;
+    width: 100%;
+}
+
+/* Input dentro del campo de contraseña */
+.login-form-side .campo-password input {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Botón de entrar */
+.login-form-side .btn-primario {
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Selector de roles */
+.login-form-side .nav-tabs-rol {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+
+@media (max-width: 980px) {
+
+    .login-wrap {
+        padding: 20px;
+    }
+
+    .login-card {
+        max-width: 600px;
+    }
+
+    .login-side {
+        display: none;
+    }
+
+    .login-form-side {
+        width: 100%;
+        flex: 1 1 100%;
+        min-width: 0;
+        padding: 40px 26px;
+    }
+}
+
+@media (max-width: 640px) {
+
+    .login-wrap {
+        padding: 15px;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .login-form-side {
+        padding: 35px 20px;
+    }
+
+    .nav-tabs-rol button {
+        font-size: 12px;
+        padding: 9px 5px;
+    }
+}
