@@ -376,7 +376,174 @@ body.sidebar-colapsado .sidebar nav a.activo::before { left: 4px; }
 .dropdown a svg, .dropdown .dd-item svg { width: 16px; height: 16px; color: var(--texto-secundario); }
 .dropdown .dd-item.rojo { color: var(--rojo); }
 .dropdown .dd-item.rojo svg { color: var(--rojo); }
-.dropdown .dd-vacio { padding: 18px 10px; text-align: center; font-size: 13px; color: var(--texto-secundario); }
+.dropdown .dd-vacio { padding: 24px 14px; text-align: center; font-size: 13px; color: var(--texto-secundario); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+/* ---------- Dropdown Notificaciones ---------- */
+.dropdown.dd-notificaciones {
+  min-width: 340px;
+  max-width: 390px;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.dd-notif-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--borde);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--texto);
+  background: var(--tarjeta-solida);
+}
+.dd-notif-header-titulo {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.dd-notif-badge {
+  background: var(--azul);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.2px;
+}
+.dd-notif-lista {
+  max-height: 380px;
+  overflow-y: auto;
+  padding: 6px;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(128,128,128,0.3) transparent;
+}
+.dd-notif-lista::-webkit-scrollbar {
+  width: 5px;
+}
+.dd-notif-lista::-webkit-scrollbar-track {
+  background: transparent;
+}
+.dd-notif-lista::-webkit-scrollbar-thumb {
+  background: rgba(128,128,128,0.25);
+  border-radius: 999px;
+}
+.dd-notif-lista::-webkit-scrollbar-thumb:hover {
+  background: rgba(128,128,128,0.45);
+}
+
+.dd-notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: var(--radio-sm);
+  text-decoration: none;
+  color: var(--texto);
+  transition: background var(--dur) var(--easing);
+  margin-bottom: 3px;
+}
+.dd-notif-item:hover {
+  background: rgba(128,128,128,0.08);
+}
+.dd-notif-icono {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #fff;
+}
+.dd-notif-icono svg {
+  width: 15px;
+  height: 15px;
+  color: #fff !important;
+}
+.dd-notif-icono.bg-azul   { background: linear-gradient(140deg, #007AFF, #5AC8FA); }
+.dd-notif-icono.bg-dorado { background: linear-gradient(140deg, #FF9500, #FFCC00); }
+.dd-notif-icono.bg-verde  { background: linear-gradient(140deg, #34C759, #30D158); }
+.dd-notif-icono.bg-rojo   { background: linear-gradient(140deg, #FF3B30, #FF453A); }
+
+.dd-notif-cuerpo {
+  flex: 1;
+  min-width: 0;
+}
+.dd-notif-titulo {
+  font-size: 12.5px;
+  font-weight: 650;
+  color: var(--texto);
+  line-height: 1.3;
+  margin-bottom: 2px;
+}
+.dd-notif-desc {
+  font-size: 11.5px;
+  color: var(--texto-secundario);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dd-notif-tiempo {
+  font-size: 10.5px;
+  color: var(--texto-terciario);
+  margin-top: 3px;
+}
+
+.dd-notif-fin {
+  padding: 12px 10px 6px;
+  text-align: center;
+  font-size: 11.5px;
+  color: var(--texto-terciario);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-top: 1px dashed var(--borde);
+  margin-top: 6px;
+}
+
+.dd-notif-footer {
+  padding: 10px;
+  border-top: 1px solid var(--borde);
+  text-align: center;
+  background: rgba(128,128,128,0.03);
+}
+.dd-notif-footer a {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--azul);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.dd-notif-footer a:hover {
+  text-decoration: underline;
+}
+
+.punto-notif-contador {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: var(--rojo);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border: 2px solid var(--topbar-bg);
+  box-shadow: 0 2px 6px rgba(255,59,48,0.35);
+  line-height: 1;
+}
 
 .centro-notif { position: relative; }
 
