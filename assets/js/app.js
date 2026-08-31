@@ -62,6 +62,14 @@
         var estabaAbierto = contenedor.classList.contains('abierto');
         cerrarMenusAbiertos();
         contenedor.classList.toggle('abierto', !estabaAbierto);
+        if (window.lucide) window.lucide.createIcons();
+      });
+    });
+    document.querySelectorAll('.dropdown').forEach(function (dd) {
+      dd.addEventListener('click', function (e) {
+        if (!e.target.closest('a')) {
+          e.stopPropagation();
+        }
       });
     });
     document.addEventListener('click', function () { cerrarMenusAbiertos(); });
