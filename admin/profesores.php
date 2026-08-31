@@ -157,7 +157,7 @@ $v = $profesorEditar ?: ['id' => '', 'nombre' => '', 'correo' => '', 'telefono' 
     </div>
 
     <?php if ($exito): ?>
-      <div class="alerta alerta-exito"><?= h($exito) ?></div>
+      <div class="alerta alerta-ok"><?= h($exito) ?></div>
     <?php endif; ?>
     <?php if ($errores): ?>
       <div class="alerta alerta-error">
@@ -200,72 +200,61 @@ $v = $profesorEditar ?: ['id' => '', 'nombre' => '', 'correo' => '', 'telefono' 
             <input type="text" id="usuario" name="usuario" value="<?= h($v['usuario']) ?>" required>
           </div>
           <div class="campo">
-            <label for="contrasena"><?= $modoEdicion ? 'Nueva contraseña' : 'Contraseña *' ?></label>
-            <input type="password" id="contrasena" name="contrasena"
-                   <?= $modoEdicion ? '' : 'required' ?>
-                   pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}"
-                   title="Mínimo 8 caracteres, con mayúscula, minúscula, número y símbolo especial"
-                   placeholder="<?= $modoEdicion ? 'Dejar en blanco para no cambiarla' : '' ?>">
-            <span class="campo-ayuda">Mínimo 8 caracteres: mayúscula, minúscula, número y símbolo especial.</span>
+            <label for="contrasena">Contraseña <?= $modoEdicion ? '(dejar en blanco para no cambiar)' : '*' ?> </label>
+            <input type="password" id="contrasena" name="contrasena" <?= !$modoEdicion ? 'required' : '' ?> placeholder="Min. 8 caracteres, mayús, minús, número y símbolo">
           </div>
         </div>
-
-        <div class="acciones-formulario">
-          <button type="submit" class="btn-primario">
-            <svg class="lucide" data-lucide="<?= $modoEdicion ? 'save' : 'user-plus' ?>"></svg>
-            <?= $modoEdicion ? 'Guardar cambios' : 'Registrar profesor' ?>
-          </button>
-          <?php if ($modoEdicion): ?><a href="profesores.php" class="btn-secundario">Cancelar edición</a><?php endif; ?>
+        <div style="margin-top: 16px;">
+          <button type="submit" class="btn-primario"><svg class="lucide" data-lucide="save"></svg> <?= $modoEdicion ? 'Actualizar profesor' : 'Registrar profesor' ?></button>
+          <?php if ($modoEdicion): ?>
+            <a href="profesores.php" class="btn-secundario"><svg class="lucide" data-lucide="x"></svg> Cancelar</a>
+          <?php endif; ?>
         </div>
       </form>
     </div>
 
     <div class="panel">
-      <h2><svg class="lucide" data-lucide="users"></svg> Profesores registrados</h2>
+      <h2><svg class="lucide" data-lucide="users"></svg> Listado de profesores (<?= $totalProfesores ?>)</h2>
       <table class="tabla-datos">
-        <thead><tr><th>Nombre</th><th>Usuario</th><th>Correo</th><th>Teléfono</th><th>Especialidad</th><th>Acciones</th></tr></thead>
+        <thead>
+          <tr><th>Nombre</th><th>Usuario</th><th>Correo</th><th>Teléfono</th><th>Especialidad</th><th>Registrado</th><th>Acciones</th></tr>
+        </thead>
         <tbody>
-        <?php foreach ($profesores as $p): ?>
+        <?php foreach ($profesores as $prof): ?>
           <tr>
-            <td><?= h($p['nombre']) ?></td>
-            <td><?= h($p['usuario']) ?></td>
-            <td><?= h($p['correo']) ?></td>
-            <td><?= h($p['telefono'] ?: '—') ?></td>
-            <td><?= h($p['especialidad'] ?: '—') ?></td>
-            <td class="celda-acciones">
-              <a href="profesores.php?editar=<?= (int)$p['id'] ?>#panel-formulario" class="btn-editar" title="Editar"><svg class="lucide" data-lucide="pencil"></svg></a>
-              <a href="profesores.php?eliminar=<?= (int)$p['id'] ?>" class="btn-eliminar" title="Eliminar" onclick="return confirm('¿Eliminar a este profesor?');"><svg class="lucide" data-lucide="trash-2"></svg></a>
+            <td><?= h($prof['nombre']) ?></td>
+            <td><code><?= h($prof['usuario']) ?></code></td>
+            <td><?= h($prof['correo']) ?></td>
+            <td><?= h($prof['telefono'] ?: '—') ?></td>
+            <td><?= h($prof['especialidad'] ?: '—') ?></td>
+            <td><?= h(date('d/m/Y', strtotime($prof['creado_en']))) ?></td>
+            <td>
+              <a class="btn-sm btn-editar" href="profesores.php?editar=<?= (int)$prof['id'] ?>" title="Editar"><svg class="lucide" data-lucide="pencil"></svg></a>
+              <a class="btn-sm btn-eliminar" href="profesores.php?eliminar=<?= (int)$prof['id'] ?>" title="Eliminar" onclick="return confirm('¿Eliminar este profesor?');"><svg class="lucide" data-lucide="trash-2"></svg></a>
             </td>
           </tr>
         <?php endforeach; ?>
-        <?php if (!$profesores): ?><tr><td colspan="6">Aún no hay profesores registrados.</td></tr><?php endif; ?>
+        <?php if (!$profesores): ?>
+          <tr><td colspan="7">No hay profesores registrados.</td></tr>
+        <?php endif; ?>
         </tbody>
       </table>
     </div>
   </main>
 </div>
-
-<style>
-.formulario-profesor { display: flex; flex-direction: column; gap: 16px; margin-top: 12px; }
-.fila-formulario { display: flex; gap: 20px; flex-wrap: wrap; }
-.fila-formulario .campo { flex: 1; min-width: 220px; display: flex; flex-direction: column; gap: 6px; }
-.fila-formulario label { font-size: 13px; opacity: 0.8; }
-.fila-formulario input { padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.05); color: inherit; font-family: inherit; font-size: 14px; }
-.fila-formulario input:focus { outline: none; border-color: #3b82f6; }
-.campo-ayuda { font-size: 12px; opacity: 0.6; }
-.acciones-formulario { display: flex; gap: 12px; align-items: center; }
-.btn-primario { display: inline-flex; align-items: center; gap: 8px; background: #3b82f6; color: #fff; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; width: fit-content; }
-.btn-primario:hover { background: #2563eb; }
-.btn-secundario { color: inherit; opacity: 0.75; text-decoration: underline; font-size: 14px; }
-.celda-acciones { display: flex; gap: 14px; }
-.btn-editar { color: #3b82f6; }
-.btn-eliminar { color: #ef4444; }
-.alerta { padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; }
-.alerta-exito { background: rgba(34,197,94,0.15); color: #22c55e; }
-.alerta-error { background: rgba(239,68,68,0.15); color: #ef4444; }
-.alerta-error ul { margin: 0; padding-left: 18px; }
-</style>
-
 <script src="../assets/js/app.js"></script>
+<script>
+  lucide.createIcons();
+  document.addEventListener('DOMContentLoaded', function() {
+    const formProf = document.querySelector('.formulario-profesor');
+    formProf?.addEventListener('submit', function(e) {
+      const pass = document.getElementById('contrasena');
+      if (pass && pass.value && pass.value.length < 8) {
+        e.preventDefault();
+        alert('La contraseña debe tener al menos 8 caracteres.');
+      }
+    });
+  });
+</script>
 </body>
 </html>
