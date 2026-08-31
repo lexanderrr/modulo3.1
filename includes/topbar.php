@@ -273,7 +273,7 @@ function formatoFechaRelativaNotif($fechaStr): string {
     <div class="menu-usuario">
       <div class="usuario-chip" data-menu-toggle>
         <div class="avatar"><?= h($iniciales ?: 'PN') ?></div>
-
+@@ -55,11 +291,11 @@
         <svg class="lucide chev" data-lucide="chevron-down"></svg>
       </div>
       <div class="dropdown">
