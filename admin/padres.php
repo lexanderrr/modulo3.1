@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($nombre && $apellido && $usuario) {
         if ($id) {
             if ($password !== '') {
-                $hash = password_hash($password, PASSWORD_BCRYPT);
+                $hash = password_hash($password, PASSWORD_DEFAULT);
                 $stmt = $pdo->prepare('UPDATE padres SET nombre=?, apellido=?, correo=?, telefono=?, usuario=?, password=? WHERE id=?');
                 $stmt->execute([$nombre, $apellido, $correo, $telefono, $usuario, $hash, $id]);
             } else {
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($password === '') {
                 $mensaje = 'Debes asignar una contraseña para el nuevo usuario.';
             } else {
-                $hash = password_hash($password, PASSWORD_BCRYPT);
+                $hash = password_hash($password, PASSWORD_DEFAULT);
                 $stmt = $pdo->prepare('INSERT INTO padres (nombre, apellido, correo, telefono, usuario, password) VALUES (?,?,?,?,?,?)');
                 $stmt->execute([$nombre, $apellido, $correo, $telefono, $usuario, $hash]);
             }
@@ -104,12 +104,12 @@ $padres = $pdo->query('SELECT * FROM padres ORDER BY apellido, nombre')->fetchAl
         <?php foreach ($padres as $p): ?>
           <tr>
             <td><?= h($p['nombre'] . ' ' . $p['apellido']) ?></td>
-            <td><?= h($p['usuario']) ?></td>
+            <td><code><?= h($p['usuario']) ?></code></td>
             <td><?= h($p['correo']) ?></td>
             <td><?= h($p['telefono']) ?></td>
             <td>
               <a class="btn-sm btn-editar" href="padres.php?editar=<?= $p['id'] ?>"><svg class="lucide" data-lucide="pencil"></svg></a>
-              <a class="btn-sm btn-eliminar" href="padres.php?eliminar=<?= $p['id'] ?>" onclick="return confirm('¿Eliminar este padre/madre y sus estudiantes asociados?');"><svg class="lucide" data-lucide="trash-2"></svg></a>
+              <a class="btn-sm btn-eliminar" href="padres.php?eliminar=<?= $p['id'] ?>" onclick="return confirm('¿Eliminar este padre?');"><svg class="lucide" data-lucide="trash-2"></svg></a>
             </td>
           </tr>
         <?php endforeach; ?>
