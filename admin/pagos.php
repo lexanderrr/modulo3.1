@@ -148,7 +148,11 @@ $etiquetasMetodo = [
     <?php if ($errores): ?>
       <div class="alerta alerta-error">
         <svg class="lucide" data-lucide="alert-circle"></svg>
-        <?= h(implode(' ', $errores)) ?>
+        <ul style="margin: 8px 0 0 20px; padding: 0;">
+          <?php foreach ($errores as $err): ?>
+            <li><?= h($err) ?></li>
+          <?php endforeach; ?>
+        </ul>
       </div>
     <?php endif; ?>
 
@@ -231,7 +235,7 @@ $etiquetasMetodo = [
             <td>
               <a class="btn-sm" href="recibo_pago.php?id=<?= $pg['id'] ?>" title="Ver recibo"><svg class="lucide" data-lucide="receipt"></svg></a>
               <?php if ($pg['estado'] === 'Activo'): ?>
-                <button type="button" class="btn-sm btn-eliminar" title="Anular" onclick="abrirAnulacion(<?= $pg['id'] ?>, '<?= h($pg['correlativo']) ?>')"><svg class="lucide" data-lucide="ban"></svg></button>
+                <button type="button" class="btn-sm btn-eliminar" title="Anular" data-pago-id="<?= (int)$pg['id'] ?>" data-correlativo="<?= h($pg['correlativo']) ?>" onclick="abrirAnulacion(this)"><svg class="lucide" data-lucide="ban"></svg></button>
               <?php endif; ?>
             </td>
           </tr>
@@ -297,7 +301,9 @@ $etiquetasMetodo = [
     grupoReferencia.style.display = requiereReferencia || this.value === '' ? 'block' : 'none';
   });
 
-  function abrirAnulacion(id, correlativo) {
+  function abrirAnulacion(btn) {
+    const id = btn.dataset.pagoId;
+    const correlativo = btn.dataset.correlativo;
     const motivo = prompt('Motivo de anulación del recibo ' + correlativo + ':');
     if (motivo && motivo.trim() !== '') {
       document.getElementById('anularId').value = id;
