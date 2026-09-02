@@ -245,14 +245,41 @@ if (isset($_GET['err'])) {
     }, 3000);
   }
 
+  function mostrarErrorEnvio(btn, msg) {
+    var original = btn.innerHTML;
+    btn.innerHTML = '<svg class="lucide" data-lucide="alert-circle"></svg> ' + msg;
+    if (window.lucide) window.lucide.createIcons();
+    setTimeout(function () {
+      btn.innerHTML = original;
+      if (window.lucide) window.lucide.createIcons();
+    }, 2500);
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     var btnSol = document.getElementById('btnSolicitarCuenta');
     if (btnSol) btnSol.addEventListener('click', function () { abrirPanel('panelSolicitar', 'scrimSolicitar'); });
     document.getElementById('cerrarSolicitar').addEventListener('click', function () { cerrarPanel('panelSolicitar', 'scrimSolicitar'); });
     document.getElementById('scrimSolicitar').addEventListener('click', function () { cerrarPanel('panelSolicitar', 'scrimSolicitar'); });
     document.getElementById('btnEnviarSolicitud').addEventListener('click', function () {
-      mostrarExito(this, '¡Solicitud enviada!');
-      setTimeout(function () { cerrarPanel('panelSolicitar', 'scrimSolicitar'); }, 1200);
+      var btn = this;
+      var datos = new FormData();
+      datos.append('nombre', document.getElementById('solNombre').value.trim());
+      datos.append('correo', document.getElementById('solCorreo').value.trim());
+      datos.append('telefono', document.getElementById('solTelefono').value.trim());
+      datos.append('carnet', document.getElementById('solCarnet').value.trim());
+      datos.append('estudiante', document.getElementById('solEstudiante').value.trim());
+
+      fetch('solicitud_cuenta.php', { method: 'POST', body: datos })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data.ok) {
+            mostrarExito(btn, '¡Solicitud enviada!');
+            setTimeout(function () { cerrarPanel('panelSolicitar', 'scrimSolicitar'); }, 1200);
+          } else {
+            mostrarErrorEnvio(btn, data.error || 'No se pudo enviar.');
+          }
+        })
+        .catch(function () { mostrarErrorEnvio(btn, 'Error de conexión.'); });
     });
 
     var btnPass = document.getElementById('btnOlvidePassword');
@@ -260,8 +287,22 @@ if (isset($_GET['err'])) {
     document.getElementById('cerrarPassword').addEventListener('click', function () { cerrarPanel('panelPassword', 'scrimPassword'); });
     document.getElementById('scrimPassword').addEventListener('click', function () { cerrarPanel('panelPassword', 'scrimPassword'); });
     document.getElementById('btnEnviarRecuperacion').addEventListener('click', function () {
-      mostrarExito(this, '¡Solicitud enviada!');
-      setTimeout(function () { cerrarPanel('panelPassword', 'scrimPassword'); }, 1200);
+      var btn = this;
+      var datos = new FormData();
+      datos.append('tipo', document.getElementById('recTipo').value);
+      datos.append('correo', document.getElementById('recCorreo').value.trim());
+
+      fetch('solicitud_password.php', { method: 'POST', body: datos })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data.ok) {
+            mostrarExito(btn, '¡Solicitud enviada!');
+            setTimeout(function () { cerrarPanel('panelPassword', 'scrimPassword'); }, 1200);
+          } else {
+            mostrarErrorEnvio(btn, data.error || 'No se pudo enviar.');
+          }
+        })
+        .catch(function () { mostrarErrorEnvio(btn, 'Error de conexión.'); });
     });
 
     document.addEventListener('keydown', function (e) {
