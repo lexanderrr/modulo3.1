@@ -6,9 +6,9 @@ exigirCajero();
 $mensaje = '';
 $errores = [];
 
-/** Genera el siguiente correlativo tipo REC-000123 de forma segura dentro de una transacción. */
-function generarCorrelativo(PDO $pdo): string {
-    $stmt = $pdo->query("SELECT correlativo FROM pagos ORDER BY id DESC LIMIT 1");
+/** Genera el siguiente folio tipo REC-000123 de forma segura dentro de una transacción. */
+function generarFolio(PDO $pdo): string {
+    $stmt = $pdo->query("SELECT folio FROM pagos ORDER BY id DESC LIMIT 1");
     $ultimo = $stmt->fetchColumn();
     $siguiente = $ultimo ? ((int)substr($ultimo, 4)) + 1 : 1;
     return 'REC-' . str_pad((string)$siguiente, 6, '0', STR_PAD_LEFT);
@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['anular_id'])) {
     if ($motivo === '') {
         $mensaje = 'Debes indicar un motivo para anular el pago.';
     } else {
-        $stmt = $pdo->prepare("UPDATE pagos SET estado='Anulado', motivo_anulacion=?, id_anulador=?, anulado_en=NOW() WHERE id=? AND estado='Activo'");
+        $stmt = $pdo->prepare("UPDATE pagos SET estado='Anulado', motivo_anulacion=?, anulado_por=?, anulado_en=NOW() WHERE id=? AND estado='Pagado'");
         $stmt->execute([$motivo, $_SESSION['admin_id'], $idAnular]);
         header('Location: pagos.php?ok=anulado');
         exit;
@@ -31,20 +31,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['anular_id'])) {
 // Registrar nuevo pago
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar_pago'])) {
     $idPadre        = (int)($_POST['id_padre'] ?? 0);
-    $concepto       = trim($_POST['concepto'] ?? '');
     $metodo         = $_POST['metodo_pago'] ?? '';
     $referencia     = trim($_POST['referencia'] ?? '');
-    $sede           = trim($_POST['sede'] ?? '') ?: 'Sede Central';
     $idsEstudiantes = $_POST['estudiantes'] ?? [];       // array de IDs seleccionados
     $montos         = $_POST['monto'] ?? [];             // array id_estudiante => monto
 
-    $metodosValidos = ['efectivo', 'transferencia', 'tarjeta_debito', 'tarjeta_credito', 'paypal'];
+    // Métodos válidos según el ENUM real de la tabla `pagos`
+    $metodosValidos = ['Efectivo', 'Transferencia', 'Tarjeta', 'QR', 'PayPal', 'Visa'];
 
     if (!$idPadre) $errores[] = 'Selecciona el padre/tutor que realiza el pago.';
-    if ($concepto === '') $errores[] = 'Indica el concepto del pago.';
     if (!in_array($metodo, $metodosValidos, true)) $errores[] = 'Selecciona un método de pago válido.';
     if (empty($idsEstudiantes)) $errores[] = 'Selecciona al menos un estudiante.';
-    if (in_array($metodo, ['transferencia', 'tarjeta_debito', 'tarjeta_credito', 'paypal'], true) && $referencia === '') {
+    if (in_array($metodo, ['Transferencia', 'Tarjeta', 'QR', 'PayPal', 'Visa'], true) && $referencia === '') {
         $errores[] = 'Indica el número de referencia/transacción para este método de pago.';
     }
 
@@ -64,12 +62,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar_pago'])) {
     if (!$errores) {
         try {
             $pdo->beginTransaction();
-            $correlativo = generarCorrelativo($pdo);
-            $stmt = $pdo->prepare('INSERT INTO pagos (correlativo, id_padre, concepto, metodo_pago, referencia, monto_total, sede, id_operador) VALUES (?,?,?,?,?,?,?,?)');
-            $stmt->execute([$correlativo, $idPadre, $concepto, $metodo, $referencia ?: null, $montoTotal, $sede, $_SESSION['admin_id']]);
+            $folio = generarFolio($pdo);
+            $stmt = $pdo->prepare('INSERT INTO pagos (folio, id_padre, metodo_pago, referencia, total, id_admin) VALUES (?,?,?,?,?,?)');
+            $stmt->execute([$folio, $idPadre, $metodo, $referencia ?: null, $montoTotal, $_SESSION['admin_id']]);
             $idPago = (int)$pdo->lastInsertId();
 
-            $stmtDet = $pdo->prepare('INSERT INTO pago_detalle (id_pago, id_estudiante, monto) VALUES (?,?,?)');
+            // id_mensualidad es opcional (NULL) porque este módulo registra pagos directos,
+            // no ligados al flujo de mensualidades programadas.
+            $stmtDet = $pdo->prepare('INSERT INTO pago_detalle (id_pago, id_mensualidad, id_estudiante, monto) VALUES (?, NULL, ?, ?)');
             foreach ($detalle as $d) {
                 $stmtDet->execute([$idPago, $d['id_estudiante'], $d['monto']]);
             }
@@ -101,11 +101,12 @@ $pagos = $pdo->query("
 ")->fetchAll();
 
 $etiquetasMetodo = [
-    'efectivo'         => 'Efectivo',
-    'transferencia'    => 'Transferencia bancaria',
-    'tarjeta_debito'   => 'Tarjeta de débito',
-    'tarjeta_credito'  => 'Tarjeta de crédito',
-    'paypal'           => 'PayPal',
+    'Efectivo'      => 'Efectivo',
+    'Transferencia' => 'Transferencia bancaria',
+    'Tarjeta'       => 'Tarjeta',
+    'QR'            => 'Pago con QR',
+    'PayPal'        => 'PayPal',
+    'Visa'          => 'Visa',
 ];
 ?>
 <!DOCTYPE html>
@@ -126,8 +127,8 @@ $etiquetasMetodo = [
   .fila-estudiante-pago input[type="number"] { margin: 0; }
   .fila-estudiante-pago.oculto { display: none; }
   .total-pago { text-align: right; font-size: 15px; font-weight: 700; margin-top: 10px; }
-  .badge-estado.Activo { background: rgba(48, 209, 88, 0.14); color: #1c8a45; }
-  [data-theme="dark"] .badge-estado.Activo { color: #7FE79A; }
+  .badge-estado.Pagado { background: rgba(48, 209, 88, 0.14); color: #1c8a45; }
+  [data-theme="dark"] .badge-estado.Pagado { color: #7FE79A; }
   .badge-estado.Anulado { background: rgba(255, 69, 58, 0.14); color: #c9372c; }
   [data-theme="dark"] .badge-estado.Anulado { color: #FF8A80; }
 </style>
@@ -171,27 +172,20 @@ $etiquetasMetodo = [
             </select>
           </div>
           <div class="form-grupo">
-            <label>Concepto</label>
-            <input type="text" name="concepto" placeholder="Ej. Mensualidad Agosto 2026" required>
-          </div>
-          <div class="form-grupo">
             <label>Método de pago</label>
             <select name="metodo_pago" id="selMetodo" required>
               <option value="">Selecciona...</option>
-              <option value="efectivo">Efectivo</option>
-              <option value="transferencia">Transferencia bancaria</option>
-              <option value="tarjeta_debito">Tarjeta de débito</option>
-              <option value="tarjeta_credito">Tarjeta de crédito</option>
-              <option value="paypal">PayPal</option>
+              <option value="Efectivo">Efectivo</option>
+              <option value="Transferencia">Transferencia bancaria</option>
+              <option value="Tarjeta">Tarjeta</option>
+              <option value="QR">Pago con QR</option>
+              <option value="PayPal">PayPal</option>
+              <option value="Visa">Visa</option>
             </select>
           </div>
           <div class="form-grupo" id="grupoReferencia">
             <label>Referencia / # de transacción</label>
             <input type="text" name="referencia" placeholder="No ingreses el número completo de tarjeta">
-          </div>
-          <div class="form-grupo">
-            <label>Sede</label>
-            <input type="text" name="sede" value="Sede Central">
           </div>
         </div>
 
@@ -225,17 +219,17 @@ $etiquetasMetodo = [
         <tbody>
         <?php foreach ($pagos as $pg): ?>
           <tr>
-            <td><?= h($pg['correlativo']) ?></td>
-            <td><?= h(date('d/m/Y H:i', strtotime($pg['creado_en']))) ?></td>
+            <td><?= h($pg['folio']) ?></td>
+            <td><?= h(date('d/m/Y H:i', strtotime($pg['fecha_pago']))) ?></td>
             <td><?= h($pg['padre_nombre'] . ' ' . $pg['padre_apellido']) ?></td>
             <td><?= h($pg['estudiantes_nombres'] ?? '') ?></td>
             <td><?= h($etiquetasMetodo[$pg['metodo_pago']] ?? $pg['metodo_pago']) ?></td>
-            <td>$<?= number_format((float)$pg['monto_total'], 2) ?></td>
+            <td>$<?= number_format((float)$pg['total'], 2) ?></td>
             <td><span class="badge-estado <?= h($pg['estado']) ?>"><?= h($pg['estado']) ?></span></td>
             <td>
               <a class="btn-sm" href="recibo_pago.php?id=<?= $pg['id'] ?>" title="Ver recibo"><svg class="lucide" data-lucide="receipt"></svg></a>
-              <?php if ($pg['estado'] === 'Activo'): ?>
-                <button type="button" class="btn-sm btn-eliminar" title="Anular" data-pago-id="<?= (int)$pg['id'] ?>" data-correlativo="<?= h($pg['correlativo']) ?>" onclick="abrirAnulacion(this)"><svg class="lucide" data-lucide="ban"></svg></button>
+              <?php if ($pg['estado'] === 'Pagado'): ?>
+                <button type="button" class="btn-sm btn-eliminar" title="Anular" data-pago-id="<?= (int)$pg['id'] ?>" data-folio="<?= h($pg['folio']) ?>" onclick="abrirAnulacion(this)"><svg class="lucide" data-lucide="ban"></svg></button>
               <?php endif; ?>
             </td>
           </tr>
@@ -297,14 +291,14 @@ $etiquetasMetodo = [
   }
 
   selMetodo.addEventListener('change', function () {
-    const requiereReferencia = ['transferencia', 'tarjeta_debito', 'tarjeta_credito', 'paypal'].includes(this.value);
+    const requiereReferencia = ['Transferencia', 'Tarjeta', 'QR', 'PayPal', 'Visa'].includes(this.value);
     grupoReferencia.style.display = requiereReferencia || this.value === '' ? 'block' : 'none';
   });
 
   function abrirAnulacion(btn) {
     const id = btn.dataset.pagoId;
-    const correlativo = btn.dataset.correlativo;
-    const motivo = prompt('Motivo de anulación del recibo ' + correlativo + ':');
+    const folio = btn.dataset.folio;
+    const motivo = prompt('Motivo de anulación del recibo ' + folio + ':');
     if (motivo && motivo.trim() !== '') {
       document.getElementById('anularId').value = id;
       document.getElementById('anularMotivo').value = motivo.trim();
