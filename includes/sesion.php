@@ -40,3 +40,17 @@ function exigirCajero(): void {
 function h($texto): string {
     return htmlspecialchars($texto ?? '', ENT_QUOTES, 'UTF-8');
 }
+
+/**
+ * Devuelve "Mes Año" en español a partir de un timestamp, sin depender de
+ * strftime() (deprecada desde PHP 8.1) ni de la extensión intl/locales del
+ * sistema operativo.
+ */
+function mesAnioEs(int $timestamp): string {
+    $meses = [
+        1 => 'enero', 2 => 'febrero', 3 => 'marzo', 4 => 'abril',
+        5 => 'mayo', 6 => 'junio', 7 => 'julio', 8 => 'agosto',
+        9 => 'septiembre', 10 => 'octubre', 11 => 'noviembre', 12 => 'diciembre',
+    ];
+    return $meses[(int)date('n', $timestamp)] . ' ' . date('Y', $timestamp);
+}
