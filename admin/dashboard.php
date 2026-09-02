@@ -3,10 +3,19 @@ require_once __DIR__ . '/../includes/sesion.php';
 require_once __DIR__ . '/../config/conexion.php';
 exigirAdmin();
 
+// Solo administradores reales pueden acceder a este módulo (no profesores ni cajeros)
+if (($_SESSION['admin_rol'] ?? '') !== 'admin') {
+    header('Location: ../profesor/dashboard.php');
+    exit;
+}
+
 $totalEstudiantes = $pdo->query('SELECT COUNT(*) FROM estudiantes')->fetchColumn();
 $totalPadres      = $pdo->query('SELECT COUNT(*) FROM padres')->fetchColumn();
 $totalMaterias    = $pdo->query('SELECT COUNT(*) FROM materias')->fetchColumn();
 $promedioGeneral  = $pdo->query('SELECT ROUND(AVG(nota),2) FROM notas')->fetchColumn();
+$totalSolicitudesPendientes =
+    (int)$pdo->query("SELECT COUNT(*) FROM solicitudes_cuenta WHERE estado = 'pendiente'")->fetchColumn() +
+    (int)$pdo->query("SELECT COUNT(*) FROM solicitudes_password WHERE estado = 'pendiente'")->fetchColumn();
 
 $ultimosAvisos = $pdo->query('SELECT titulo, fecha FROM avisos ORDER BY fecha DESC LIMIT 4')->fetchAll();
 $ultimasNotas = $pdo->query('
@@ -55,6 +64,11 @@ $ultimasNotas = $pdo->query('
         <div class="icono bg-rojo"><svg class="lucide" data-lucide="star"></svg></div>
         <div class="num"><?= $promedioGeneral !== null ? h($promedioGeneral) : '—' ?></div>
         <div class="label">Promedio general</div>
+      </div>
+      <div class="tarjeta-stat">
+        <div class="icono bg-dorado"><svg class="lucide" data-lucide="inbox"></svg></div>
+        <div class="num"><a href="solicitudes.php" style="color:inherit; text-decoration:none;"><?= $totalSolicitudesPendientes ?></a></div>
+        <div class="label"><a href="solicitudes.php" style="color:inherit; text-decoration:none;">Solicitudes pendientes</a></div>
       </div>
         </div>
 
