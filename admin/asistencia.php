@@ -3,6 +3,12 @@ require_once __DIR__ . '/../includes/sesion.php';
 require_once __DIR__ . '/../config/conexion.php';
 exigirAdmin();
 
+// Solo administradores reales pueden acceder a este módulo (no profesores ni cajeros)
+if (($_SESSION['admin_rol'] ?? '') !== 'admin') {
+    header('Location: ../profesor/dashboard.php');
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $idEstudiante = (int)$_POST['id_estudiante'];
     $fecha        = $_POST['fecha'];
