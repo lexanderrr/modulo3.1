@@ -126,7 +126,7 @@ if ($estudiantes) {
         </div>
         <span style="color:var(--gris-texto);font-size:13px;">
           <svg class="lucide" data-lucide="info"></svg> 
-          <?= h(strtoupper(strftime('%B %Y', strtotime($fechaFiltro)))) ?>
+          <?= h(mb_strtoupper(mesAnioEs(strtotime($fechaFiltro)))) ?>
         </span>
       </form>
 
@@ -182,7 +182,7 @@ if ($estudiantes) {
     </div>
 
     <div class="panel">
-      <h2><svg class="lucide" data-lucide="bar-chart-3"></svg> Resumen mensual — <?= h(strftime('%B %Y', strtotime($fechaFiltro))) ?></h2>
+      <h2><svg class="lucide" data-lucide="bar-chart-3"></svg> Resumen mensual — <?= h(mesAnioEs(strtotime($fechaFiltro))) ?></h2>
       <div class="tabla-wrap">
         <table class="tabla-datos">
           <thead><tr><th>Estudiante</th><th>Total</th><th>Presentes</th><th>Ausentes</th><th>Tardanzas</th><th>% Asistencia</th></tr></thead>
