@@ -24,6 +24,9 @@
     <a href="profesores.php" class="<?= $pagina === 'profesores.php' ? 'activo' : '' ?>">
       <svg class="lucide" data-lucide="briefcase"></svg><span class="etiqueta">Profesores</span>
     </a>
+    <a href="solicitudes.php" class="<?= $pagina === 'solicitudes.php' ? 'activo' : '' ?>">
+      <svg class="lucide" data-lucide="inbox"></svg><span class="etiqueta">Solicitudes</span>
+    </a>
 
     <div class="grupo-titulo">Académico</div>
     <a href="materias.php" class="<?= $pagina === 'materias.php' ? 'activo' : '' ?>">
